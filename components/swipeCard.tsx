@@ -30,15 +30,21 @@ export const SwipeCard = ({ fact, onSwipe }: CardProps) => {
       drag
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       onDragEnd={handleDragEnd}
-      className="absolute w-80 h-112.5 bg-white rounded-2xl shadow-xl overflow-hidden cursor-grab active:cursor-grabbing border border-gray-100"
+      /* Updated: Added font-sans and optimized height */
+      className="absolute w-80 h-[480px] bg-white rounded-3xl shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing border border-gray-100 flex flex-col font-sans"
     >
-      <img
-        src={fact.imageUrl}
-        alt="Fact visual"
-        className="w-full h-2/3 object-cover pointer-events-none"
-      />
-      <div className="p-6">
-        <p className="text-gray-800 text-lg font-medium leading-tight">
+      {/* The "In-margin" Container */}
+      <div className="p-3 w-full h-3/5">
+        <img
+          src={fact.imageUrl}
+          alt="Fact visual"
+          /* Updated: Added rounded corners to the image itself to match the margin feel */
+          className="w-full h-full object-cover pointer-events-none rounded-2xl shadow-inner bg-gray-50"
+        />
+      </div>
+
+      <div className="px-6 py-4 flex flex-col justify-center flex-grow">
+        <p className="text-slate-900 text-xl font-semibold leading-snug tracking-tight">
           {fact.text}
         </p>
       </div>

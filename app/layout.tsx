@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
+
+const sans = Montserrat({ subsets: ["latin"] }); // Or Montserrat for a bolder look
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

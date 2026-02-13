@@ -31,6 +31,7 @@ export async function GET() {
       try {
         const generatedImage: Buffer<ArrayBuffer> | null = await generateImage(
           fact.fact_text,
+          fact.id,
         );
         if (!generatedImage) throw new Error("Image generation failed");
         if (generatedImage) {
@@ -64,13 +65,14 @@ export async function GET() {
 }
 
 function getRandomIds() {
-  return Array.from({ length: 2 }, () =>
+  return Array.from({ length: 4 }, () =>
     Math.floor(Math.random() * (factsRowMax - factsRowMin + 1) + factsRowMin),
   );
 }
 
 async function generateImage(
   fact_text: string,
+  id: number,
 ): Promise<Buffer<ArrayBuffer> | null> {
   const prompt = `Make a vector based cartoon for: "${fact_text}"\n DO NOT use text in the image.`;
   const response: GenerateContentResponse = await ai.models.generateContent({
@@ -79,7 +81,7 @@ async function generateImage(
   });
   try {
     const parts = response.candidates?.[0]?.content?.parts;
-    if (!parts) throw new Error("Gen Image API failed");
+    if (!parts) throw new Error(`Gen Image API failed for fact id: ${id}`);
     for (const part of parts) {
       if (part.inlineData?.data) {
         const base64Data: Buffer<ArrayBuffer> = Buffer.from(
@@ -110,7 +112,7 @@ async function storeImageToDatabase(
 
   if (error || !data) throw new Error("Error uploading file: " + error.message);
   console.log(
-    `Image store successfully for: ${id} at publicUrl: ${data.fullPath}`,
+    `Image store successfully for: ${id} at filepath: ${data.fullPath}`,
   );
   return `${supabaseImageStoragePrefixURL}${fileName}`;
 }

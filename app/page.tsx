@@ -27,7 +27,7 @@ export default function Home() {
     setStack((prev) => {
       const newStack = [...prev];
       newStack.pop();
-      if (newStack.length < 2) fetchFacts();
+      if (newStack.length <= 2) fetchFacts();
       return newStack;
     });
   };
