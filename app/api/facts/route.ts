@@ -1,17 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
 import { GenerateContentResponse, GoogleGenAI } from "@google/genai";
 
-const supabaseUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!;
-const supabaseBucketName: string =
-  process.env.NEXT_PUBLIC_SUPABASE_BUCKET_NAME!;
+const supabaseUrl: string = process.env.SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY!;
+const supabaseBucketName: string = process.env.SUPABASE_BUCKET_NAME!;
 const supabaseImageStoragePrefixURL: string = `${supabaseUrl}/storage/v1/object/public/${supabaseBucketName}/`;
 const defaultImageUrl = `${supabaseImageStoragePrefixURL}default.jpg`;
 
-const factsRowMin: number = parseInt(process.env.NEXT_PUBLIC_MIN_FACT_ID!);
-const factsRowMax: number = parseInt(process.env.NEXT_PUBLIC_MAX_FACT_ID!);
+const factsRowMin: number = parseInt(process.env.MIN_FACT_ID!);
+const factsRowMax: number = parseInt(process.env.MAX_FACT_ID!);
 
-const googleApiKey: string = process.env.NEXT_PUBLIC_GOOGLE_API_KEY!;
+const googleApiKey: string = process.env.GOOGLE_API_KEY!;
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const ai = new GoogleGenAI({ apiKey: googleApiKey });
