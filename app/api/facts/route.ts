@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { GenerateContentResponse, GoogleGenAI } from "@google/genai";
+import { NextResponse } from "next/server";
 
 const supabaseUrl: string = process.env.SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY!;
@@ -15,14 +16,18 @@ const googleApiKey: string = process.env.GOOGLE_API_KEY!;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const ai = new GoogleGenAI({ apiKey: googleApiKey });
 
-export async function GET() {
+export async function GET(): Promise<NextResponse> {
   const randomIds: number[] = getRandomIds();
   const { data: facts } = await supabase
     .from("facts")
     .select("*")
     .in("id", randomIds);
 
-  if (!facts) return [];
+  if (!facts)
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
 
   const processedFacts = await Promise.all(
     facts.map(async (fact) => {
@@ -60,7 +65,7 @@ export async function GET() {
       }
     }),
   );
-  return Response.json(processedFacts);
+  return NextResponse.json(processedFacts);
 }
 
 function getRandomIds() {

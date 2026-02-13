@@ -6,6 +6,7 @@ import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 interface CardProps {
   fact: { id: string; text: string; imageUrl: string };
   onSwipe: (direction: "up" | "down" | "left" | "right") => void;
+  style?: React.CSSProperties;
 }
 
 export const SwipeCard = ({ fact, onSwipe }: CardProps) => {

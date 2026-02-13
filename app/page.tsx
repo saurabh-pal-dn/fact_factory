@@ -1,50 +1,67 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// app/page.tsx
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { SwipeCard } from "@/components/swipeCard";
 
 export default function Home() {
   const [stack, setStack] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchFacts = async () => {
+  // Use a ref to prevent duplicate fetches in React Strict Mode
+  const isFetching = useRef(false);
+
+  const fetchFacts = useCallback(async () => {
+    if (isFetching.current) return;
+    isFetching.current = true;
+
     try {
       const res = await fetch("/api/facts");
+      if (!res.ok) throw new Error("Network response was not ok");
+
       const newFacts = await res.json();
+
+      // Update state once to avoid multiple render triggers
       setStack((prev) => [...newFacts, ...prev]);
-      setLoading(false);
     } catch (err) {
       console.error("Failed to fetch:", err);
+    } finally {
+      setIsLoading(false);
+      isFetching.current = false;
     }
-  };
-
-  useEffect(() => {
-    fetchFacts();
   }, []);
 
-  const handleSwipe = (direction: string) => {
+  // Initial mount fetch
+  useEffect(() => {
+    fetchFacts();
+  }, [fetchFacts]);
+
+  const handleSwipe = () => {
     setStack((prev) => {
       const newStack = [...prev];
       newStack.pop();
-      if (newStack.length <= 2) fetchFacts();
+      // Threshold check for background fetching
+      if (newStack.length <= 3 && !isFetching.current) {
+        fetchFacts();
+      }
       return newStack;
     });
   };
 
-  if (loading && stack.length === 0) {
+  // 1. Loading State
+  if (isLoading && stack.length === 0) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
-        <p className="animate-bounce text-blue-600 font-bold">
-          Loading Facts...
-        </p>
+      <div className="flex h-screen items-center justify-center bg-lime-800">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-lime-500 border-t-transparent rounded-full animate-spin mb-4 mx-auto" />
+          <p className="text-lime-200 font-medium">Preparing your facts...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <main className="flex h-screen w-full items-center justify-center bg-lime-800 overflow-hidden">
-      <div className="relative w-80 h-[450px] flex items-center justify-center">
+      <div className="relative w-80 h-[480px] flex items-center justify-center">
         {stack.map((fact, index) => (
           <SwipeCard
             key={fact.id}
@@ -58,9 +75,19 @@ export default function Home() {
           />
         ))}
 
-        {/* Fallback when cards run out */}
-        {stack.length === 0 && !loading && (
-          <p className="text-white">You have seen them all!</p>
+        {/* 2. Empty State */}
+        {stack.length === 0 && !isLoading && (
+          <div className="text-center p-8 bg-white/5 rounded-2xl backdrop-blur-sm border border-white/10">
+            <p className="text-white text-lg font-medium">
+              Knowledge cycle complete!
+            </p>
+            <button
+              onClick={() => fetchFacts()}
+              className="mt-4 px-6 py-2 bg-green-900 text-white rounded-full font-bold hover:bg-green-700 transition-colors"
+            >
+              Get more facts!
+            </button>
+          </div>
         )}
       </div>
     </main>
