@@ -60,8 +60,15 @@ export default function Home() {
   }
 
   return (
-    <main className="flex h-screen w-full items-center justify-center bg-lime-800 overflow-hidden">
-      <div className="relative w-80 h-[480px] flex items-center justify-center">
+    <main className="flex flex-col h-screen w-full items-center justify-center pt-2 bg-lime-800 overflow-hidden">
+      <div className="mb-2 -mt-16 pointer-events-none select-none">
+        <img
+          src="/dyk.png"
+          alt="Did You Know?"
+          className="w-32 md:w-56 h-auto drop-shadow-2xl"
+        />
+      </div>
+      <div className="relative w-76 h-[480px] flex items-start justify-center mt-2">
         {stack.map((fact, index) => (
           <SwipeCard
             key={fact.id}
